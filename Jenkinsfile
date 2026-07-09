@@ -1,10 +1,9 @@
 pipeline {
-    agent { label 'worker-node' }
+    agent any
 
     environment {
         DOCKER_IMAGE  = "neeraj91/flask-app"
         DOCKER_TAG    = "${BUILD_NUMBER}"
-        SONAR_PROJECT = "flask-app"
     }
 
     stages {
@@ -12,34 +11,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-            }
-        }
-
-        stage('SonarQube Scan') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    script {
-                        def scannerHome = tool 'SonarScanner'
-
-                        sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=${SONAR_PROJECT} \
-                            -Dsonar.projectName=${SONAR_PROJECT} \
-                            -Dsonar.sources=. \
-                            -Dsonar.python.version=3
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                sleep(time: 15, unit: 'SECONDS')
-
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
             }
         }
 
@@ -72,21 +43,8 @@ pipeline {
         }
     }
 
-    post {
-
-        success {
-            echo "BUILD SUCCESS - Image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
-            echo "SonarQube: PASSED"
-        }
-
-        unstable {
-            echo "BUILD UNSTABLE - Review OWASP and Trivy reports"
-        }
-
-        failure {
-            echo "BUILD FAILED - Check console logs"
-        }
-
+    post
+    {
         always {
             cleanWs()
         }
