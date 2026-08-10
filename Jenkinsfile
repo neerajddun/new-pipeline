@@ -11,6 +11,14 @@ pipeline {
                checkout scm
             }
         }
+        
+        stage ('docker image') {
+
+            steps {
+
+                sh 'docker build -t ${JOB_NAME}:v1.${BUILD_NUMBER} .'
+            }
+        }
  
     }
 }
