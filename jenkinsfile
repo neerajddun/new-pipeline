@@ -50,8 +50,8 @@ pipeline {
                 sh '''
 
                 docker build -t ${JOB_NAME}:v1.${BUILD_NUMBER} .
-                docker tag  ${JOB_NAME}:v1.${BUILD_NUMBER} neeraj91/ ${JOB_NAME}:v1.${BUILD_NUMBER}
-                docker tag  ${JOB_NAME}:v1.${BUILD_NUMBER} neeraj91/ ${JOB_NAME}:latest
+                docker tag ${JOB_NAME}:v1.${BUILD_NUMBER} neeraj91/ ${JOB_NAME}:v1.${BUILD_NUMBER}
+                docker tag ${JOB_NAME}:v1.${BUILD_NUMBER} neeraj91/ ${JOB_NAME}:latest
             
             '''
 
