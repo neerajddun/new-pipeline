@@ -2,6 +2,13 @@ pipeline {
 
     agent any 
 
+    environment {
+
+        maven 'Maven 3.9.9'
+
+        jdk 'jdk 21'
+    }
+
     stages {
 
         stage ('Checkout') {
