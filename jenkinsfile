@@ -66,13 +66,16 @@ pipeline {
                      
                      withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'Dockervars', usernameVariable: 'Dockername')]) {
                      
+                     sh '''
+
                      docker login -u $Dockername -p $Dockervars
 
                      docker push neeraj91/ ${JOB_NAME}:v1.${BUILD_NUMBER}
 
 
                      docker push neeraj91/ ${JOB_NAME}:latest
-
+                     
+                     '''
                     }
 
                 }
