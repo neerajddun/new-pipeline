@@ -68,12 +68,12 @@ pipeline {
                      
                      sh '''
 
-                     docker login -u $Dockername -p $Dockervars --password-stdin
+                      echo $Dockervars | docker login -u $Dockername --password-stdin
 
-                     docker push neeraj91/ ${JOB_NAME}:v1.${BUILD_NUMBER}
+                     docker push neeraj91/${JOB_NAME}:v1.${BUILD_NUMBER}
 
 
-                     docker push neeraj91/ ${JOB_NAME}:latest
+                     docker push neeraj91/${JOB_NAME}:latest
                      
                      '''
                     }
