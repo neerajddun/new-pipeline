@@ -33,9 +33,14 @@ pipeline {
                 script{
 
                    withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'DOCKERVARS', usernameVariable: 'DOCKERNAME')]) {
+                    
+                    sh '''
 
-                     sh 'docker push neeraj91/${JOB_NAME}:v1.${BUILD_NUMBER}'
-                    sh 'docker push neeraj91/${JOB_NAME}:latest'
+                    docker login -u $DOCKERNAME -p $DOCKERVARS
+                    docker push neeraj91/${JOB_NAME}:v1.${BUILD_NUMBER}
+                    docker push neeraj91/${JOB_NAME}:latest
+                    
+                    '''
                     }
                 }
             }
