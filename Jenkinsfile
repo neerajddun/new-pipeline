@@ -26,18 +26,19 @@ pipeline {
             }
         }
 
-        stage ('docker push')
+        stage ('docker push') {
 
-        steps {
+           steps {
 
-            script{
+                script{
 
-                withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'DOCKERVARS', usernameVariable: 'DOCKERNAME')]) {
+                   withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'DOCKERVARS', usernameVariable: 'DOCKERNAME')]) {
 
-                    sh 'docker push neeraj91/${JOB_NAME}:v1.${BUILD_NUMBER}'
+                     sh 'docker push neeraj91/${JOB_NAME}:v1.${BUILD_NUMBER}'
                     sh 'docker push neeraj91/${JOB_NAME}:latest'
+                    }
+                }
             }
         }
- 
-    }
+    }   
 }
