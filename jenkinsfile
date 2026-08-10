@@ -42,5 +42,57 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-    }
+
+        stage ('Docker image') {
+
+            steps {
+
+                sh '''
+
+                docker build -t ${JOB_NAME}:v1.${BUILD_NUMBER} .
+                docker tag  ${JOB_NAME}:v1.${BUILD_NUMBER} neeraj91/ ${JOB_NAME}:v1.${BUILD_NUMBER}
+                docker tag  ${JOB_NAME}:v1.${BUILD_NUMBER} neeraj91/ ${JOB_NAME}:latest
+            
+            '''
+
+            }
+        }
+
+        stage ('Docker push') {
+
+            steps {
+
+                script {
+                     
+                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'Dockervars', usernameVariable: 'Dockername')]) {
+                     
+                     docker login -u $Dockername -p $Dockervars
+
+                     docker push neeraj91/ ${JOB_NAME}:v1.${BUILD_NUMBER}
+
+
+                     docker push neeraj91/ ${JOB_NAME}:latest
+
+                    }
+
+                }
+            }
+        }
+
+        stage ('Deploy'){
+
+            steps {
+
+                sh 'echo Deploy'
+            }
+        }
+     }
+
+     post {
+
+        always {
+
+            cleanWs()
+        }
+     }
 }
