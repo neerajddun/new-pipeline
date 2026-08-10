@@ -45,5 +45,13 @@ pipeline {
                 }
             }
         }
+
+        stage ('Deploy') {
+
+            steps {
+
+                sh 'echo Deploy'
+            }
+        }
     }   
 }
