@@ -4,7 +4,7 @@ pipeline {
 
     stages {
 
-        stgae ('Checkout') {
+        stage ('Checkout') {
 
             steps {
 
