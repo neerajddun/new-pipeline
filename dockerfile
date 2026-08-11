@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY pom.xml . 
 
-RUN mvn install dependency:go-offline -B 
+RUN mvn dependency:go-offline -B 
 
 COPY src ./src 
 
@@ -22,5 +22,5 @@ COPY --from=builder /app/target/*.jar app.jar
 
 EXPOSE 8080 
 
-CMD ["java" ," -jar" , "app.jar"]
+CMD ["java","-jar","app.jar"]
 
