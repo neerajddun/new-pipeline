@@ -9,6 +9,12 @@ pipeline {
         jdk 'jdk 21'
     }
 
+    environment {
+
+        ECR_REGISTRY = "717655057681.dkr.ecr.ap-southeast-1.amazonaws.com"
+        IMAGE_NAME   = "${env.JOB_NAME.toLowerCase()}"
+    }
+
     stages {
 
         stage ('Checkout') {
@@ -49,9 +55,9 @@ pipeline {
 
                 sh '''
 
-                docker build -t ${JOB_NAME}:v1.${BUILD_NUMBER} .
-                docker tag ${JOB_NAME}:v1.${BUILD_NUMBER} neeraj91/${JOB_NAME}:v1.${BUILD_NUMBER}
-                docker tag ${JOB_NAME}:v1.${BUILD_NUMBER} neeraj91/${JOB_NAME}:latest
+                docker build -t ${IMAGE_NAME}:v1.${BUILD_NUMBER} .
+                docker tag ${IMAGE_NAME}:v1.${BUILD_NUMBER} ${ECR_REGISTRY}/${IMAGE_NAME}:v1.${BUILD_NUMBER}
+                docker tag ${IMAGE_NAME}:v1.${BUILD_NUMBER} ${ECR_REGISTRY}/${IMAGE_NAME}:latest
             
             '''
 
@@ -64,16 +70,15 @@ pipeline {
 
                 script {
                      
-                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'Dockervars', usernameVariable: 'Dockername')]) {
+                    withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-creds', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                      
                      sh '''
 
-                      echo $Dockervars | docker login -u $Dockername --password-stdin
+                     aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+                     docker push ${ECR_REGISTRY}/${IMAGE_NAME}:v1.${BUILD_NUMBER}
 
-                     docker push neeraj91/${JOB_NAME}:v1.${BUILD_NUMBER}
 
-
-                     docker push neeraj91/${JOB_NAME}:latest
+                     docker push ${ECR_REGISTRY}/${IMAGE_NAME}:latest
                      
                      '''
                     }
