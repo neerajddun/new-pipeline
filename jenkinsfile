@@ -90,8 +90,22 @@ pipeline {
         stage ('Deploy'){
 
             steps {
+
+                script {
+                 
+                 withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-creds', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                  
+                  sh '''
+
+                  aws eks update-kubeconfig --region ap-southeast-1 --name my-cluster
+                  envsubst < deployment.yaml | kubectl apply -f -
+                  kubectl apply -f service.yaml
+                  kubectl rollout status deployment/myapp -n default --timeout=120s
+                 
+                 '''
+                    }
                
-             sh 'echo Deploy'
+                }
                 
             }
         }
@@ -99,7 +113,7 @@ pipeline {
         post {
 
           always {
-
+            sh 'docker image prune -f '
             cleanWs()
             }
         }
