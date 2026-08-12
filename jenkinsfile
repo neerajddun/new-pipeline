@@ -93,14 +93,14 @@ pipeline {
                
              sh 'echo Deploy'
                 
+            }
         }
-     }
+    }
+        post {
 
-     post {
-
-        always {
+          always {
 
             cleanWs()
+            }
         }
-     }
 }
