@@ -11,8 +11,9 @@ pipeline {
 
     environment {
 
-        ECR_REGISTRY = "883999921903.dkr.ecr.ap-southeast-1.amazonaws.com"
-        IMAGE_NAME   = "${env.JOB_NAME.toLowerCase()}"
+        ECR_REGISTRY = '883999921903.dkr.ecr.ap-southeast-1.amazonaws.com'
+        ECR_REPO = 'new-pipeline'
+        IMAGE_TAG = "v1.${BUILD_NUMBER}"
     }
 
     stages {
@@ -24,7 +25,6 @@ pipeline {
                 checkout scm
             }
         }
-
         stage ('Unit Test') {
 
             steps {
@@ -37,7 +37,7 @@ pipeline {
 
             steps {
 
-                sh 'mvn verify'
+                sh 'mvn verify -DskipTests -B'
             }
         }
 
@@ -55,9 +55,9 @@ pipeline {
 
                 sh '''
 
-                docker build -t ${IMAGE_NAME}:v1.${BUILD_NUMBER} .
-                docker tag ${IMAGE_NAME}:v1.${BUILD_NUMBER} ${ECR_REGISTRY}/${IMAGE_NAME}:v1.${BUILD_NUMBER}
-                docker tag ${IMAGE_NAME}:v1.${BUILD_NUMBER} ${ECR_REGISTRY}/${IMAGE_NAME}:latest
+                docker build -t $ECR_REPO:$IMAGE_TAG .
+                docker tag $ECR_REPO:$IMAGE_TAG ${ECR_REGISTRY}/$ECR_REPO:$IMAGE_TAG
+                docker tag $ECR_REPO:$IMAGE_TAG ${ECR_REGISTRY}/$ECR_REPO:latest
             
             '''
 
@@ -75,10 +75,8 @@ pipeline {
                      sh '''
 
                      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
-                     docker push ${ECR_REGISTRY}/${IMAGE_NAME}:v1.${BUILD_NUMBER}
-
-
-                     docker push ${ECR_REGISTRY}/${IMAGE_NAME}:latest
+                     docker push ${ECR_REGISTRY}/$ECR_REPO:$IMAGE_TAG   
+                     docker push ${ECR_REGISTRY}/$ECR_REPO:latest
                      
                      '''
                     }
@@ -88,7 +86,6 @@ pipeline {
         }
 
         stage ('Deploy'){
-
             steps {
 
                 script {
@@ -104,9 +101,7 @@ pipeline {
                  
                  '''
                     }
-               
                 }
-                
             }
         }
     }
