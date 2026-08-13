@@ -74,7 +74,7 @@ pipeline {
                      
                      sh '''
 
-                     aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+                    aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
                      docker push ${ECR_REGISTRY}/$ECR_REPO:$IMAGE_TAG   
                      docker push ${ECR_REGISTRY}/$ECR_REPO:latest
                      
@@ -97,8 +97,7 @@ pipeline {
                   aws eks update-kubeconfig --region ap-southeast-1 --name my-cluster
                   envsubst < deployment.yaml | kubectl apply -f -
                   kubectl apply -f service.yaml
-                  kubectl rollout status deployment/myapp -n default --timeout=120s
-                 
+                  
                  '''
                     }
                 }
